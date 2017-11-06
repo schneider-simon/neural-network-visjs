@@ -3,16 +3,30 @@ import logo from './logo.svg';
 import './App.css';
 import vis from 'vis'
 import {initNetwork} from "./neural-network/layers"
-import {getVisualizationData} from "./neural-network/visualization"
+import {getVisualizationData, updateDataSets} from "./neural-network/visualization"
+import {propagateForward} from "./neural-network/propagation"
+import {prepareTestData} from "./neural-network/preparation"
 
 class App extends Component {
   componentDidMount() {
     const network = initNetwork();
 
     console.log(network)
+    const testData = prepareTestData(require("./iris.json"))
 
     const container = document.getElementById('network')
     const data = getVisualizationData(network);
+
+    let i = 0;
+    setInterval(() => {
+      if (i > 10) {
+        return
+      }
+
+      propagateForward(network, testData[i++])
+      updateDataSets(network, data.nodes)
+      console.log(i)
+    }, 500)
 
     console.log(data)
 

@@ -1,5 +1,5 @@
 export const initLayers = () => {
-  return connectAllLayers([generateLayer(7), generateLayer(5), generateLayer(5), generateLayer(3)]);
+  return connectAllLayers([generateLayer(3), generateLayer(5), generateLayer(5), generateLayer(3)]);
 }
 
 export const initNetwork = () => {
@@ -17,7 +17,9 @@ const generateLayer = (neuronsAmount) => {
   const layer = {
     id: ++layerCounter,
     neurons: [],
-    color: LAYER_COLORS[layerCounter - 1]
+    color: LAYER_COLORS[layerCounter - 1],
+    isInput: false,
+    isOutput: false
   };
   let neuronCounterLayer = 0;
 
@@ -26,7 +28,7 @@ const generateLayer = (neuronsAmount) => {
       id: ++neuronCounter,
       counter: ++neuronCounterLayer,
       value: 0,
-      bias: Math.random(),
+      bias: 0,
       connections: [],
       isDrawn: (neuronsAmount < 50 || i % 20 === 0)
     })
@@ -42,6 +44,9 @@ const connectAllLayers = (layerArray) => {
     }
   }
 
+  layerArray[0].isInput = true;
+  layerArray[layerArray.length - 1].isOutput = true;
+
   return layerArray
 }
 
@@ -53,16 +58,28 @@ const connectTwoLayers = (layer1, layer2) => {
       const leftNeuron = layer1.neurons[j];
       innerNeuron.connections.push({
         neuron: leftNeuron,
-        weight: Math.random()
+        weight: (Math.random() - 0.5)
       })
     }
   }
 }
 
 export const visitNeurons = (layers, callback) => {
+  if (!layers[0]) {
+    layers = [layers]
+  }
+
   for (let i = 0; i !== layers.length; i++) {
     for (let j = 0; j !== layers[i].neurons.length; j++) {
       callback(layers[i].neurons[j], layers[i])
     }
   }
+}
+
+export const inputLayer = (layers) => {
+  return layers[0]
+}
+
+export const outputLayer = (layers) => {
+  return layers[layers.length - 1]
 }
